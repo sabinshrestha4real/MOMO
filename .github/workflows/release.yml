@@ -1,0 +1,72 @@
+name: Dev Build
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+    inputs:
+      android_track:
+        description: "Play Store track"
+        required: false
+        default: "internal"
+
+env:
+  FLUTTER_VERSION: "3.32.0"
+
+jobs:
+  android-playstore:
+    name: Android -> Play Console (internal track)
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.3"
+          bundler-cache: true
+
+      - name: Flutter pub get
+        run: flutter pub get
+
+      - name: Decode keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release-keystore.jks
+
+      - name: Write key.properties
+        run: |
+          cat > android/key.properties <<EOF
+          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
+          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
+          storeFile=release-keystore.jks
+          EOF
+
+      - name: Decode Play Store service account key
+        run: |
+          echo "${{ secrets.PLAY_STORE_JSON_KEY_BASE64 }}" | base64 -d > android/fastlane/play-store-key.json
+
+      - name: Build & upload to Play Console
+        working-directory: android
+        env:
+          BUILD_NUMBER: ${{ github.run_number }}
+          ANDROID_PACKAGE_NAME: ${{ vars.ANDROID_PACKAGE_NAME }}
+          PLAY_STORE_JSON_KEY_PATH: fastlane/play-store-key.json
+          PLAY_TRACK: ${{ github.event.inputs.android_track || 'internal' }}
+        run: bundle exec fastlane beta
+
+      - name: Clean up secrets from disk
+        if: always()
+        run: |
+          rm -f android/app/release-keystore.jks android/key.properties android/fastlane/play-store-key.json

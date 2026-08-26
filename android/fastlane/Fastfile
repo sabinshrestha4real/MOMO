@@ -1,0 +1,23 @@
+default_platform(:android)
+
+platform :android do
+  desc "Build the AAB and upload to the Play Console internal testing track"
+  lane :beta do
+    sh(
+      "flutter", "build", "appbundle",
+      "--release",
+      "--build-number=#{ENV['BUILD_NUMBER']}",
+    ) if ENV["BUILD_NUMBER"]
+
+    sh("flutter", "build", "appbundle", "--release") unless ENV["BUILD_NUMBER"]
+
+    upload_to_play_store(
+      track: ENV["PLAY_TRACK"] || "internal", # internal testing track — not production
+      aab: "../build/app/outputs/bundle/release/app-release.aab",
+      release_status: "draft",
+      skip_upload_metadata: true,
+      skip_upload_images: true,
+      skip_upload_screenshots: true,
+    )
+  end
+end
