@@ -53,6 +53,17 @@ jobs:
           storeFile=release-keystore.jks
           EOF
 
+      - name: Debug key.properties (no secrets printed)
+        run: |
+          echo "storePassword length: $(grep storePassword android/key.properties | cut -d= -f2 | wc -c)"
+          echo "keyPassword length: $(grep keyPassword android/key.properties | cut -d= -f2 | wc -c)"
+          echo "keyAlias value: $(grep keyAlias android/key.properties | cut -d= -f2)"
+          echo "--- verifying keystore opens with these credentials ---"
+          keytool -list -v -keystore android/app/release-keystore.jks \
+            -storepass "$(grep storePassword android/key.properties | cut -d= -f2)" \
+            -alias "$(grep keyAlias android/key.properties | cut -d= -f2)" \
+            > /dev/null && echo "✓ keystore opened successfully" || echo "✗ keystore FAILED to open with these credentials"
+
       - name: Decode Play Store service account key
         run: |
           echo "${{ secrets.PLAY_STORE_JSON_KEY_BASE64 }}" | base64 -d > android/fastlane/play-store-key.json
