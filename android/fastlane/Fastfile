@@ -12,7 +12,7 @@ platform :android do
     sh("flutter", "build", "appbundle", "--release") unless ENV["BUILD_NUMBER"]
 
     upload_to_play_store(
-      track: ENV["PLAY_TRACK"] || "internal", # internal testing track — not production
+      track: ENV["PLAY_TRACK"] || "internal",
       aab: "../build/app/outputs/bundle/release/app-release.aab",
       release_status: "draft",
       skip_upload_metadata: true,

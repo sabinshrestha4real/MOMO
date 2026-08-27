@@ -44,6 +44,14 @@ jobs:
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > android/app/release-keystore.jks
 
+      - name: Verify keystore integrity
+        run: |
+          echo "Decoded keystore SHA256:"
+          sha256sum android/app/release-keystore.jks
+          echo ""
+          echo "File size (bytes):"
+          wc -c < android/app/release-keystore.jks
+
       - name: Write key.properties
         run: |
           cat > android/key.properties <<EOF
