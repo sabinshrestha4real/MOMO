@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mantraideas.testing"
+    namespace = "com.mantraideas.testing1"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
