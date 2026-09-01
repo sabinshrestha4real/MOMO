@@ -89,25 +89,3 @@ jobs:
         if: always()
         run: |
           rm -f android/app/release-keystore.jks android/key.properties android/fastlane/play-store-key.json
-
-      - name: Email QA the testing link
-        if: success()
-        uses: dawidd6/action-send-mail@v3
-        with:
-          server_address: ${{ secrets.SMTP_SERVER }}
-          server_port: ${{ secrets.SMTP_PORT }}
-          username: ${{ secrets.SMTP_USERNAME }}
-          password: ${{ secrets.SMTP_PASSWORD }}
-          subject: "MOMO dev build #${{ github.run_number }} is up for testing"
-          to: aasthastha143@gmail.com
-          from: MOMO CI
-          body: |
-            A new dev build has been uploaded to the Play Console internal testing track.
-
-            Build: #${{ github.run_number }}
-            Commit: ${{ github.sha }}
-
-            Opt-in / download link:
-            ${{ vars.PLAY_INTERNAL_TESTING_URL }}
-
-            If this is your first time, open the link on the device you'll test with, accept the invite, then install from the Play Store.
