@@ -14,7 +14,7 @@ plugins {
 }
 
 android {
-    namespace = "com.mantraideas.testing1"
+    namespace = "com.aastha.momo"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mantraideas.testing1"
+        applicationId = "com.aastha.momo"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
