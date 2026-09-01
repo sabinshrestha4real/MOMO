@@ -24,7 +24,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "com.mantraideas.testing"
+        applicationId = "com.mantraideas.testing1"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
